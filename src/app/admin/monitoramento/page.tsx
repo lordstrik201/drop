@@ -9,7 +9,7 @@ import { cancelJobAction, retryJobAction, runJobsNowAction } from "./actions";
 export const metadata = { title: "Monitoramento" };
 
 const JOB_LABEL: Record<string, string> = {
-  "supplier.forward": "Encaminhar ao fornecedor", "payment.sync": "Sincronizar pagamento", "notify.order": "E-mail ao cliente", "orders.expire": "Expirar pedidos não pagos",
+  "supplier.forward": "Encaminhar ao fornecedor", "payment.sync": "Sincronizar pagamento", "notify.order": "E-mail ao cliente", "orders.expire": "Expirar pedidos não pagos", "suppliers.sync_all": "Agendar sincronização de fornecedores", "supplier.sync": "Sincronizar fornecedor",
 };
 type SP = { aba?: string; nivel?: string; fonte?: string; ok?: string; erro?: string };
 

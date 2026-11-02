@@ -28,6 +28,9 @@ const nextConfig: NextConfig = {
   // (evita proxy aberto e custo de otimização na hospedagem).
   images: { unoptimized: true },
   serverExternalPackages: ["postgres"],
+  // Upload de imagens (até 4 MB) e CSV de importação pelo painel. A Vercel limita
+  // o corpo da requisição de funções a 4,5 MB, então não adianta subir além disso.
+  experimental: { serverActions: { bodySizeLimit: "4.5mb" } },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

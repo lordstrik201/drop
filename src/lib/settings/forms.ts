@@ -7,7 +7,7 @@ import type { SettingKey } from "@/lib/settings";
  * Formulários declarativos das configurações: a mesma definição desenha o
  * formulário e valida o envio no servidor.
  */
-export type FieldType = "text" | "textarea" | "bool" | "money" | "moneyOpt" | "int" | "color" | "cep" | "url" | "email" | "select";
+export type FieldType = "text" | "textarea" | "bool" | "money" | "moneyOpt" | "int" | "color" | "cep" | "url" | "email" | "select" | "percent";
 export type SettingField = { key: string; label: string; type: FieldType; help?: string; options?: [string, string][]; max?: number; min?: number; placeholder?: string };
 export type SettingForm = { key: SettingKey; title: string; description?: string; fields: SettingField[]; validate?: (v: Record<string, unknown>) => string | null };
 
@@ -88,6 +88,15 @@ export const SETTING_FORMS: SettingForm[] = [
     validate: (v) => (v.mode === "melhorenvio" && String(v.origin_cep ?? "").length !== 8 ? "Para usar o Melhor Envio, informe o CEP de origem." : null),
   },
   {
+    key: "pricing", title: "Precificação", description: "Usado para estimar margem e sugerir preços. Os valores reais de taxa vêm do Mercado Pago em cada pagamento.",
+    fields: [
+      { key: "estimated_fee_bps", label: "Taxa média do gateway (%)", type: "percent", help: "Consulte a sua taxa no Mercado Pago (varia por forma de pagamento e prazo de recebimento)." },
+      { key: "estimated_fee_fixed_cents", label: "Taxa fixa por venda (R$)", type: "money" },
+      { key: "default_target_margin_bps", label: "Margem-alvo padrão (%)", type: "percent" },
+      { key: "min_margin_alert_bps", label: "Alertar margem abaixo de (%)", type: "percent" },
+    ],
+  },
+  {
     key: "notifications", title: "E-mails ao cliente", description: "E-mails transacionais (sobre o próprio pedido) não exigem consentimento de marketing.",
     fields: [
       { key: "order_created", label: "Pedido recebido", type: "bool" },
@@ -109,6 +118,11 @@ export function parseSettingForm(form: SettingForm, f: FormData, current: Record
     switch (fd.type) {
       case "bool": out[fd.key] = f.get(fd.key) === "on"; break;
       case "money": out[fd.key] = raw ? parseBRL(raw) : 0; break;
+      case "percent": {
+        const n = Number(raw.replace(",", "."));
+        if (raw === "" || !Number.isFinite(n) || n < 0 || n >= 100) throw new Error(`${fd.label}: informe um percentual entre 0 e 99,99.`);
+        out[fd.key] = Math.round(n * 100); break;
+      }
       case "moneyOpt": out[fd.key] = raw ? parseBRL(raw) : null; break;
       case "int": {
         const n = z.coerce.number().int().min(fd.min ?? 0).max(fd.max ?? 1_000_000).safeParse(raw);

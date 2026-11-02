@@ -25,6 +25,8 @@ function FieldInput({ f, value }: { f: SettingField; value: unknown }) {
       return <input type="color" name={f.key} defaultValue={String(v) || "#000000"} className="h-10 w-20 rounded border border-line" />;
     case "money": case "moneyOpt":
       return <input name={f.key} defaultValue={money(value)} inputMode="decimal" placeholder="0,00" className={inputClass} />;
+    case "percent":
+      return <input name={f.key} defaultValue={typeof value === "number" ? String(value / 100).replace(".", ",") : ""} inputMode="decimal" placeholder="0" className={inputClass} />;
     case "int":
       return <input name={f.key} type="number" min={f.min} max={f.max} defaultValue={String(v)} className={inputClass} />;
     case "cep":

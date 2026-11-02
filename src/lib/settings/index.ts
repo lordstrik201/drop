@@ -25,6 +25,7 @@ export type NotificationSettings = Record<
   boolean
 > & { staff_email: string };
 export type MarketingSettings = { abandoned_cart_enabled: boolean; abandoned_cart_delay_hours: number };
+export type PricingSettings = { estimated_fee_bps: number; estimated_fee_fixed_cents: number; default_target_margin_bps: number; min_margin_alert_bps: number };
 export type LoyaltySettings = { enabled: boolean; points_per_real: number; cents_per_point: number };
 
 export type SettingsMap = {
@@ -39,6 +40,7 @@ export type SettingsMap = {
   notifications: NotificationSettings;
   marketing: MarketingSettings;
   loyalty: LoyaltySettings;
+  pricing: PricingSettings;
 };
 export type SettingKey = keyof SettingsMap;
 

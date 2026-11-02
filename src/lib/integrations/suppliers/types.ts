@@ -52,6 +52,6 @@ export interface SupplierAdapter {
   ping?(): Promise<{ ok: boolean; message: string }>;
   createOrder?(input: SupplierOrderInput): Promise<SupplierOrderResult>;
   getTracking?(externalOrderId: string): Promise<SupplierTracking>;
-  fetchProduct?(externalId: string): Promise<ImportedProduct>;
+  fetchProduct?(externalId: string, config: Record<string, unknown>): Promise<ImportedProduct>;
   fetchStock?(variantExternalIds: string[]): Promise<Record<string, number>>;
 }

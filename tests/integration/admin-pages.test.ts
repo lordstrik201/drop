@@ -20,7 +20,7 @@ async function render(el: React.ReactNode) {
   return html;
 }
 
-let orderId = "", profileId = "";
+let orderId = "", profileId = "", productId = "", supplierId = "";
 beforeAll(async () => {
   const [u] = await db()`insert into auth.users (email) values (${`admin${Date.now()}@example.com`}) returning id`;
   await db()`update public.profiles set role = 'admin', full_name = 'Admin Teste' where id = ${u.id}`;
@@ -31,6 +31,10 @@ beforeAll(async () => {
   const [o] = await db()`insert into public.orders (idempotency_key, profile_id, customer_name, customer_email, shipping_address, subtotal_cents, total_cents)
     values (${"smoke-" + Date.now()}, ${c.id}, 'Cliente', 'cli@example.com', ${db().json({ recipient_name: "C", cep: "01310100", street: "R", number: "1", district: "B", city: "SP", state: "SP" })}, 1000, 1000) returning id`;
   orderId = o.id;
+  supplierId = s.id;
+  const [pr] = await db()`insert into public.products (name, slug, sku, supplier_id, price_cents, cost_cents) values ('Produto smoke', ${"smoke-" + Date.now()}, ${"SMK-" + Date.now()}, ${s.id}, 1000, 400) returning id`;
+  productId = pr.id;
+  await db()`insert into public.product_variants (product_id, sku, stock_quantity) values (${pr.id}, ${"SMK-V-" + Date.now()}, 3)`;
   await db()`insert into public.order_items (order_id, supplier_id, product_name, sku, quantity, unit_price_cents, unit_cost_cents, total_cents) values (${o.id}, ${s.id}, 'P', 'S', 1, 1000, 400, 1000)`;
   await db()`insert into public.order_status_history (order_id, to_status, source) values (${o.id}, 'pending_payment', 'checkout')`;
   await db()`insert into public.contact_messages (name, email, subject, message) values ('A', 'a@b.com', 'Dúvida', 'Olá')`;
@@ -61,6 +65,15 @@ describe("páginas do painel renderizam", () => {
     ["configuracoes", () => import("@/app/admin/configuracoes/page"), () => ({ searchParams: sp() })],
     ["conteudo", () => import("@/app/admin/conteudo/page"), () => ({ searchParams: sp() })],
     ["pagina", () => import("@/app/admin/conteudo/paginas/[slug]/page"), () => ({ params: Promise.resolve({ slug: "termos-de-uso" }), searchParams: sp() })],
+    ["produtos", () => import("@/app/admin/produtos/page"), () => ({ searchParams: sp({ alerta: "margem_baixa" }) })],
+    ["produtos-sem-estoque", () => import("@/app/admin/produtos/page"), () => ({ searchParams: sp({ alerta: "sem_estoque", q: "smoke" }) })],
+    ["produto", () => import("@/app/admin/produtos/[id]/page"), () => ({ params: Promise.resolve({ id: productId }), searchParams: sp() })],
+    ["produto-novo", () => import("@/app/admin/produtos/[id]/page"), () => ({ params: Promise.resolve({ id: "novo" }), searchParams: sp() })],
+    ["importar", () => import("@/app/admin/produtos/importar/page"), () => ({ searchParams: sp() })],
+    ["categorias", () => import("@/app/admin/categorias/page"), () => ({ searchParams: sp() })],
+    ["fornecedores", () => import("@/app/admin/fornecedores/page"), () => ({ searchParams: sp() })],
+    ["fornecedor", () => import("@/app/admin/fornecedores/[id]/page"), () => ({ params: Promise.resolve({ id: supplierId }), searchParams: sp() })],
+    ["fornecedor-novo", () => import("@/app/admin/fornecedores/[id]/page"), () => ({ params: Promise.resolve({ id: "novo" }), searchParams: sp() })],
   ];
   for (const [name, load, props] of pages) {
     it(name, async () => {
