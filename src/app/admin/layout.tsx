@@ -17,6 +17,7 @@ const ITEMS: { href: string; label: string; icon: string; perm: Permission; grou
   { href: "/admin/clientes", label: "Clientes", icon: "users", perm: "customers.read", group: "Clientes" },
   { href: "/admin/atendimento", label: "Atendimento", icon: "message", perm: "customers.read", group: "Clientes" },
   { href: "/admin/avaliacoes", label: "Avaliações", icon: "star", perm: "reviews.moderate", group: "Clientes" },
+  { href: "/admin/pagamentos", label: "Pagamentos", icon: "card", perm: "finance.read", group: "Gestão" },
   { href: "/admin/financeiro", label: "Financeiro", icon: "wallet", perm: "finance.read", group: "Gestão" },
   { href: "/admin/relatorios", label: "Relatórios", icon: "chart", perm: "reports.read", group: "Gestão" },
   { href: "/admin/marketing", label: "Marketing", icon: "megaphone", perm: "marketing.write", group: "Gestão" },

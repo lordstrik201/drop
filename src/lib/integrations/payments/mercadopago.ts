@@ -78,6 +78,8 @@ export type PreferenceInput = {
   siteUrl: string;
   expiresAt: Date;
   statementDescriptor?: string;
+  /** Tipos ocultos (ids de payment_type_id) e parcelas máximas (1–36). */
+  paymentMethods?: { excludedTypes: string[]; installments: number };
 };
 
 export type Preference = { id: string; init_point: string; sandbox_init_point?: string };
@@ -127,7 +129,22 @@ export function buildPreferenceBody(i: PreferenceInput) {
     expires: true,
     expiration_date_to: i.expiresAt.toISOString(),
     metadata: { order_number: i.orderNumber },
+    ...(i.paymentMethods
+      ? { payment_methods: {
+          excluded_payment_types: i.paymentMethods.excludedTypes.filter((t) => t !== "account_money").map((id) => ({ id })),
+          installments: Math.min(36, Math.max(1, Math.floor(i.paymentMethods.installments))),
+        } }
+      : {}),
   };
+}
+
+/**
+ * Meios de pagamento disponíveis para a conta (GET /v1/payment_methods).
+ * https://www.mercadopago.com.br/developers/en/reference/online-payments/checkout-api-payments/payment-methods/get
+ */
+export type MpPaymentMethod = { id: string; name: string; payment_type_id: string; status: string; secure_thumbnail?: string };
+export async function listPaymentMethods(token: string, f: FetchLike = fetch): Promise<MpPaymentMethod[]> {
+  return call<MpPaymentMethod[]>(f, token, "GET", "/v1/payment_methods");
 }
 
 export async function createPreference(token: string, input: PreferenceInput, f: FetchLike = fetch): Promise<Preference> {

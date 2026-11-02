@@ -51,6 +51,7 @@ export async function startCheckoutPayment(orderId: string, f: mp.FetchLike = fe
     select id, product_name, variant_title, quantity, unit_price_cents, image_url from public.order_items where order_id = ${orderId}`;
   const checkout = await readSetting("checkout");
   const identity = await readSetting("store.identity");
+  const payCfg = await readSetting("payments");
   const pref = await mp.createPreference(creds.accessToken, {
     orderId,
     orderNumber: Number(o.number),
@@ -61,6 +62,7 @@ export async function startCheckoutPayment(orderId: string, f: mp.FetchLike = fe
     siteUrl: env().NEXT_PUBLIC_SITE_URL.replace(/\/$/, ""),
     expiresAt: new Date(new Date(o.created_at).getTime() + checkout.pending_payment_expiration_hours * 3600_000),
     statementDescriptor: identity.name.replace(/[^A-Za-z0-9 ]/g, "").toUpperCase(),
+    paymentMethods: { excludedTypes: payCfg.excluded_payment_types, installments: payCfg.max_installments },
   }, f);
   await sql`insert into public.payments (order_id, provider, provider_preference_id, status, amount_cents, raw)
             values (${orderId}, 'mercadopago', ${pref.id}, 'pending', ${o.total_cents}, ${sql.json({ init_point: pref.init_point, sandbox_init_point: pref.sandbox_init_point ?? null } as never)})`;
