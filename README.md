@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Drop — plataforma de dropshipping nacional
 
-## Getting Started
+Loja virtual completa para dropshipping no Brasil (pt-BR, R$, horário de Brasília):
+vitrine, checkout com Mercado Pago (Pix, crédito e débito), encaminhamento de pedidos
+a fornecedores (CJdropshipping por API; Dropi e fornecedores independentes por
+operação manual/CSV), logística e rastreio, financeiro, CRM com LGPD, marketing,
+relatórios em CSV/PDF e painel administrativo com permissões por papel.
 
-First, run the development server:
+**Stack:** Next.js 16 (App Router) + TypeScript + Tailwind CSS 4 · Supabase
+(PostgreSQL, Auth, Storage) · Vercel · GitHub · Vitest.
+
+## Começo rápido (desenvolvimento)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local          # preencha DATABASE_URL e as chaves do Supabase
+npm run db:migrate                  # aplica supabase/migrations em ordem
+npm run db:create-admin -- --email voce@empresa.com.br
+npm run dev                         # http://localhost:3000  (painel em /admin)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Testes (precisam de um PostgreSQL local; veja `docs/MANUTENCAO.md`):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run typecheck && npm run lint && npm test && npm run build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Documentação
 
-## Learn More
+| Documento | Conteúdo |
+|---|---|
+| [docs/ARQUITETURA.md](docs/ARQUITETURA.md) | Visão geral, módulos, fluxo do pedido, fila de tarefas |
+| [docs/DECISOES.md](docs/DECISOES.md) | Decisões técnicas e por quê |
+| [docs/INSTALACAO.md](docs/INSTALACAO.md) | Supabase, Vercel, homologação e produção, passo a passo |
+| [docs/OPERACAO.md](docs/OPERACAO.md) | Rotina da loja: pedidos, fornecedores, envios, reembolsos, LGPD |
+| [docs/INTEGRACOES.md](docs/INTEGRACOES.md) | O que cada integração faz, credenciais e limites |
+| [docs/SEGURANCA.md](docs/SEGURANCA.md) | Papéis, RLS, dados de clientes, LGPD, segredos |
+| [docs/MANUTENCAO.md](docs/MANUTENCAO.md) | Atualizações, migrations, backups, monitoramento, testes |
+| [docs/CUSTOS.md](docs/CUSTOS.md) | Custos recorrentes e por venda |
 
-To learn more about Next.js, take a look at the following resources:
+## Regras de negócio que o sistema garante
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Pedido só vai ao fornecedor com **pagamento aprovado** (e, por padrão, aprovação manual no painel).
+- Idempotência em pedidos, pagamentos, webhooks, encaminhamentos, e-mails e lançamentos financeiros.
+- Nenhum dado de cartão passa pelo nosso servidor (Checkout Pro do Mercado Pago).
+- Credenciais só em variáveis de ambiente ou cifradas no banco (AES-256-GCM), nunca no código.
+- Integração sem credencial aparece como “aguardando configuração”, nunca como conectada.
+- Prazos de entrega são exibidos como estimativa; nenhuma data é prometida sem confirmação.
+- E-mails de marketing só com consentimento, com descadastro em um clique.
