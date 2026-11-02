@@ -18,3 +18,8 @@ export function spDayStart(isoDate: string): Date {
 export function todaySP(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(new Date());
 }
+
+/** Instante atual (componentes de servidor renderizam uma vez por requisição). */
+export function nowMs(): number {
+  return Date.now();
+}

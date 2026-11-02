@@ -216,6 +216,8 @@ describe("encaminhamento ao fornecedor", () => {
     const { order } = await paidOrder(true);
     const [so] = await db()`select id from public.supplier_orders where order_id = ${order.id}`;
     const [u] = await db()`insert into auth.users (email) values (${`op${Date.now()}@example.com`}) returning id`;
+    await expect(markSupplierOrderSubmitted(so.id, "PED-123", u.id)).rejects.toThrow(/Aprove o encaminhamento/);
+    await approveOrderForFulfillment(order.id, u.id);
     await markSupplierOrderSubmitted(so.id, "PED-123", u.id);
     const [o] = await db()`select status from public.orders where id = ${order.id}`;
     expect(o.status).toBe("sent_to_supplier");

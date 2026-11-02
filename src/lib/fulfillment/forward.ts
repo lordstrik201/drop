@@ -106,7 +106,8 @@ export async function markSupplierOrderSubmitted(supplierOrderId: string, extern
       from public.supplier_orders so join public.orders o on o.id = so.order_id where so.id = ${supplierOrderId} for update of so`;
     if (!so) throw new Error("Pedido de fornecedor não encontrado");
     if (!isPaidState(so.order_status)) throw new Error("Pedido não está pago.");
-    if (!["pending", "failed", "awaiting_approval"].includes(so.status)) throw new Error("Este pedido já foi encaminhado.");
+    if (so.status === "awaiting_approval") throw new Error("Aprove o encaminhamento deste pedido antes de registrá-lo no fornecedor.");
+    if (!["pending", "failed", "submitting"].includes(so.status)) throw new Error("Este pedido já foi encaminhado.");
     await tx`update public.supplier_orders set status = 'submitted', external_order_id = ${externalOrderId.trim()}, submitted_at = now(), last_error = null where id = ${supplierOrderId}`;
     await realizeSupplierCosts(tx, so.order_id, so.supplier_id);
     const [pending] = await tx<{ n: number }[]>`
