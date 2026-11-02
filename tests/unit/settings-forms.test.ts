@@ -12,7 +12,7 @@ describe("formulários de configuração", () => {
     expect(() => parseSettingForm(form("shipping"), fd({ mode: "x" }), {})).toThrow(/opção inválida/);
   });
   it("checkbox desmarcado vira false; intervalos validados", () => {
-    const v = parseSettingForm(form("fulfillment"), fd({ delay_alert_days: "5" }), { auto_forward_paid_orders: true });
+    const v = parseSettingForm(form("fulfillment"), fd({ delay_alert_days: "5", stale_tracking_days: "7", tracking_refresh_hours: "12" }), { auto_forward_paid_orders: true });
     expect(v.auto_forward_paid_orders).toBe(false);
     expect(() => parseSettingForm(form("fulfillment"), fd({ delay_alert_days: "0" }), {})).toThrow();
   });

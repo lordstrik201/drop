@@ -75,6 +75,8 @@ export const SETTING_FORMS: SettingForm[] = [
     fields: [
       { key: "auto_forward_paid_orders", label: "Encaminhar automaticamente pedidos pagos", type: "bool", help: "Desligado (padrão seguro): todo pedido pago aguarda aprovação no painel. Fornecedores marcados com “exige aprovação” sempre aguardam." },
       { key: "delay_alert_days", label: "Alertar se o fornecedor não enviar rastreio em (dias)", type: "int", min: 1, max: 60 },
+      { key: "stale_tracking_days", label: "Alertar se o rastreio ficar sem atualização por (dias)", type: "int", min: 1, max: 90 },
+      { key: "tracking_refresh_hours", label: "Consultar rastreio automático a cada (horas)", type: "int", min: 1, max: 168, help: "Vale para envios da CJ. Correios e Melhor Envio: código lançado manualmente." },
     ],
   },
   {

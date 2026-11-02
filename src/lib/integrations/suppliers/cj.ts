@@ -62,10 +62,10 @@ async function storeTokens(t: Tokens) {
 export class CjClient {
   constructor(private f: typeof fetch = fetch, private gapMs = 1100) {}
 
-  private async raw<T>(method: "GET" | "POST", path: string, opts: { query?: Record<string, string>; body?: unknown; token?: string | null } = {}): Promise<CjEnvelope<T>> {
+  private async raw<T>(method: "GET" | "POST", path: string, opts: { query?: Record<string, string | string[]>; body?: unknown; token?: string | null } = {}): Promise<CjEnvelope<T>> {
     await throttle(this.gapMs);
     const url = new URL(BASE + path);
-    for (const [k, v] of Object.entries(opts.query ?? {})) url.searchParams.set(k, v);
+    for (const [k, v] of Object.entries(opts.query ?? {})) for (const one of Array.isArray(v) ? v : [v]) url.searchParams.append(k, one);
     let res: Response;
     try {
       res = await this.f(url.toString(), {
@@ -102,7 +102,7 @@ export class CjClient {
   }
 
   /** Chamada autenticada; renova o token uma vez se a CJ recusar. */
-  async call<T>(method: "GET" | "POST", path: string, opts: { query?: Record<string, string>; body?: unknown } = {}): Promise<T> {
+  async call<T>(method: "GET" | "POST", path: string, opts: { query?: Record<string, string | string[]>; body?: unknown } = {}): Promise<T> {
     let tok = await this.token();
     let r = await this.raw<T>(method, path, { ...opts, token: tok });
     if (!r.result && /token/i.test(r.message ?? "")) {
@@ -220,9 +220,9 @@ export function buildCjOrderBody(input: SupplierOrderInput, cfg: CjConfig) {
   };
 }
 
-export type CjTrack = { trackingNumber: string; logisticName?: string | null; trackingStatus?: string | null; deliveryDay?: string | null; deliveryTime?: string | null; lastMileCarrier?: string | null; lastTrackNumber?: string | null };
+export type CjTrack = { trackingNumber: string; trackingFrom?: string | null; trackingTo?: string | null; logisticName?: string | null; trackingStatus?: string | null; deliveryDay?: string | null; deliveryTime?: string | null; lastMileCarrier?: string | null; lastTrackNumber?: string | null };
 
-export function cjAdapter(f: typeof fetch = fetch, gapMs = 1100): SupplierAdapter & { trackInfo(trackNumber: string): Promise<CjTrack[]> } {
+export function cjAdapter(f: typeof fetch = fetch, gapMs = 1100): SupplierAdapter & { trackInfo(trackNumber: string | string[]): Promise<CjTrack[]> } {
   const client = new CjClient(f, gapMs);
   return {
     code: "cj",
@@ -254,8 +254,9 @@ export function cjAdapter(f: typeof fetch = fetch, gapMs = 1100): SupplierAdapte
         throw e;
       }
     },
-    async trackInfo(trackNumber: string) {
-      return client.call<CjTrack[]>("GET", "/logistic/trackInfo", { query: { trackNumber } });
+    /** Aceita vários códigos: a CJ documenta consulta em lote repetindo o parâmetro trackNumber. */
+    async trackInfo(trackNumber: string | string[]) {
+      return (await client.call<CjTrack[] | null>("GET", "/logistic/trackInfo", { query: { trackNumber } })) ?? [];
     },
-  } as SupplierAdapter & { trackInfo(trackNumber: string): Promise<CjTrack[]> };
+  } as SupplierAdapter & { trackInfo(trackNumber: string | string[]): Promise<CjTrack[]> };
 }

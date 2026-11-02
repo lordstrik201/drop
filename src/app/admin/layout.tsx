@@ -11,6 +11,7 @@ const ITEMS: { href: string; label: string; icon: string; perm: Permission; grou
   { href: "/admin", label: "Dashboard", icon: "gauge", perm: "dashboard.view", group: "Visão geral" },
   { href: "/admin/pedidos", label: "Pedidos", icon: "receipt", perm: "orders.read", group: "Operação" },
   { href: "/admin/encaminhamento", label: "Encaminhamento", icon: "send", perm: "orders.read", group: "Operação" },
+  { href: "/admin/envios", label: "Envios e rastreio", icon: "truck", perm: "orders.read", group: "Operação" },
   { href: "/admin/produtos", label: "Produtos", icon: "package", perm: "products.read", group: "Catálogo" },
   { href: "/admin/categorias", label: "Categorias", icon: "folder", perm: "products.read", group: "Catálogo" },
   { href: "/admin/fornecedores", label: "Fornecedores", icon: "factory", perm: "suppliers.read", group: "Catálogo" },

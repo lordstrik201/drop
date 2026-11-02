@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
-  Activity, BarChart3, CreditCard, Factory, FileText, Folder, Gauge, History, Megaphone, Menu, MessageSquare, Package, Plug, Receipt, Send, Settings, Shield, Star, Users, Wallet, X,
+  Activity, BarChart3, CreditCard, Factory, FileText, Folder, Gauge, History, Megaphone, Menu, MessageSquare, Package, Plug, Receipt, Send, Settings, Shield, Star, Truck, Users, Wallet, X,
 } from "lucide-react";
 
-const ICONS = { gauge: Gauge, receipt: Receipt, send: Send, package: Package, folder: Folder, factory: Factory, users: Users, message: MessageSquare, star: Star, wallet: Wallet, chart: BarChart3, megaphone: Megaphone, file: FileText, settings: Settings, plug: Plug, shield: Shield, activity: Activity, history: History, card: CreditCard };
+const ICONS = { gauge: Gauge, receipt: Receipt, send: Send, package: Package, folder: Folder, factory: Factory, users: Users, message: MessageSquare, star: Star, wallet: Wallet, chart: BarChart3, megaphone: Megaphone, file: FileText, settings: Settings, plug: Plug, shield: Shield, activity: Activity, history: History, card: CreditCard, truck: Truck };
 
 type Item = { href: string; label: string; icon: string; group: string };
 

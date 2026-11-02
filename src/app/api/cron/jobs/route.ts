@@ -17,11 +17,16 @@ async function run(request: Request) {
   await enqueueJob(db(), "orders.expire", {}, `orders.expire:${slot}`, { maxAttempts: 1 });
   // Sincronização de fornecedores: uma vez por dia (a chave com a data impede repetir).
   await enqueueJob(db(), "suppliers.sync_all", {}, `suppliers.sync_all:${new Date().toISOString().slice(0, 10)}`, { maxAttempts: 2 });
+  // Rastreio automático: a cada hora (só consulta envios vencidos pelo intervalo configurado).
+  await enqueueJob(db(), "shipments.track", {}, `shipments.track:${Math.floor(Date.now() / 3_600_000)}`, { maxAttempts: 2 });
+  // Resumo diário de alertas de logística no log do sistema.
+  await enqueueJob(db(), "logistics.alerts", {}, `logistics.alerts:${new Date().toISOString().slice(0, 10)}`, { maxAttempts: 1 });
   // Tarefas rápidas primeiro; a sincronização de fornecedor (lenta, limitada pela API) roda uma por execução.
   const started = Date.now();
-  const fast = Object.keys(jobHandlers).filter((t) => t !== "supplier.sync");
+  const SLOW = ["supplier.sync", "shipments.track"];
+  const fast = Object.keys(jobHandlers).filter((t) => !SLOW.includes(t));
   const summary = await runDueJobs(jobHandlers, { limit: 25, types: fast });
-  const slow = Date.now() - started < 10_000 ? await runDueJobs(jobHandlers, { limit: 1, types: ["supplier.sync"] }) : null;
+  const slow = Date.now() - started < 10_000 ? await runDueJobs(jobHandlers, { limit: 1, types: SLOW }) : null;
   return NextResponse.json({ ok: true, ...summary, supplierSync: slow });
 }
 

@@ -75,6 +75,8 @@ describe("páginas do painel renderizam", () => {
     ["fornecedor", () => import("@/app/admin/fornecedores/[id]/page"), () => ({ params: Promise.resolve({ id: supplierId }), searchParams: sp() })],
     ["fornecedor-novo", () => import("@/app/admin/fornecedores/[id]/page"), () => ({ params: Promise.resolve({ id: "novo" }), searchParams: sp() })],
     ["pagamentos", () => import("@/app/admin/pagamentos/page"), () => ({ searchParams: sp({ status: "approved" }) })],
+    ["envios", () => import("@/app/admin/envios/page"), () => ({ searchParams: sp() })],
+    ["envios-todos", () => import("@/app/admin/envios/page"), () => ({ searchParams: sp({ aba: "todos", status: "posted", q: "BR" }) })],
   ];
   for (const [name, load, props] of pages) {
     it(name, async () => {

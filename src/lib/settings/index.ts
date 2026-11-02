@@ -18,7 +18,7 @@ export type StoreSocial = { instagram: string; facebook: string; tiktok: string;
 export type StoreSeo = { title: string; description: string; keywords: string };
 export type AnalyticsSettings = { ga4_id: string; gtm_id: string; meta_pixel_id: string };
 export type CheckoutSettings = { require_cpf: boolean; min_order_cents: number; pending_payment_expiration_hours: number };
-export type FulfillmentSettings = { auto_forward_paid_orders: boolean; delay_alert_days: number };
+export type FulfillmentSettings = { auto_forward_paid_orders: boolean; delay_alert_days: number; stale_tracking_days: number; tracking_refresh_hours: number };
 export type ShippingSettings = { mode: "product" | "flat" | "melhorenvio"; flat_rate_cents: number; free_shipping_over_cents: number | null; origin_cep: string };
 export type NotificationSettings = Record<
   "order_created" | "payment_approved" | "order_shipped" | "order_delivered" | "order_canceled" | "refund_completed",

@@ -33,7 +33,7 @@ export async function cancelJobAction(f: FormData) {
 export async function runJobsNowAction() {
   return runAdmin(BACK, async () => {
     const u = await assertPermission("monitoring.retry");
-    const s = await runDueJobs(jobHandlers, { limit: 25, workerId: `painel:${u.id}`, types: Object.keys(jobHandlers).filter((t) => t !== "supplier.sync") });
+    const s = await runDueJobs(jobHandlers, { limit: 25, workerId: `painel:${u.id}`, types: Object.keys(jobHandlers).filter((t) => t !== "supplier.sync" && t !== "shipments.track") });
     await audit(u, "jobs.run_now", "job", null, { after: s });
     return `Fila processada: ${s.processed} tarefa(s), ${s.succeeded} ok, ${s.failed} com falha, ${s.dead} esgotada(s).`;
   });
