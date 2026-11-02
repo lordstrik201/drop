@@ -75,6 +75,10 @@ describe("páginas do painel renderizam", () => {
     ["fornecedor", () => import("@/app/admin/fornecedores/[id]/page"), () => ({ params: Promise.resolve({ id: supplierId }), searchParams: sp() })],
     ["fornecedor-novo", () => import("@/app/admin/fornecedores/[id]/page"), () => ({ params: Promise.resolve({ id: "novo" }), searchParams: sp() })],
     ["pagamentos", () => import("@/app/admin/pagamentos/page"), () => ({ searchParams: sp({ status: "approved" }) })],
+    ["financeiro", () => import("@/app/admin/financeiro/page"), () => ({ searchParams: sp() })],
+    ["financeiro-contas", () => import("@/app/admin/financeiro/page"), () => ({ searchParams: sp({ aba: "contas", situacao: "todas" }) })],
+    ["financeiro-lucro", () => import("@/app/admin/financeiro/page"), () => ({ searchParams: sp({ aba: "lucro" }) })],
+    ["relatorios", () => import("@/app/admin/relatorios/page"), () => ({ searchParams: sp() })],
     ["envios", () => import("@/app/admin/envios/page"), () => ({ searchParams: sp() })],
     ["envios-todos", () => import("@/app/admin/envios/page"), () => ({ searchParams: sp({ aba: "todos", status: "posted", q: "BR" }) })],
   ];

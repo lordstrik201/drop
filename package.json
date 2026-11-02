@@ -19,6 +19,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^1.66.0",
     "next": "16.4.3",
+    "pdf-lib": "1.17.1",
     "postgres": "^4.0.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
