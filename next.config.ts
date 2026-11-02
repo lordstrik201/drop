@@ -24,12 +24,9 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  images: {
-    remotePatterns: [
-      { protocol: "https", hostname: "**.supabase.co" },
-      { protocol: "https", hostname: "**.cjdropshipping.com" },
-    ],
-  },
+  // Imagens de fornecedores vêm de muitos domínios; servimos sem o otimizador
+  // (evita proxy aberto e custo de otimização na hospedagem).
+  images: { unoptimized: true },
   serverExternalPackages: ["postgres"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];

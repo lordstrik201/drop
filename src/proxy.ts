@@ -11,7 +11,8 @@ export async function proxy(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const path = request.nextUrl.pathname;
-  const isPrivate = path.startsWith("/admin") || path.startsWith("/conta");
+  const under = (p: string) => path === p || path.startsWith(`${p}/`);
+  const isPrivate = under("/admin") || under("/conta");
 
   if (!url || !key) {
     // Sem autenticação configurada, áreas privadas ficam fechadas.
