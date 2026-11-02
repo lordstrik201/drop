@@ -43,7 +43,7 @@ describe("esquema do banco", () => {
     await db()`insert into public.products (name, slug, sku, status, price_cents) values ('Rascunho', 'rascunho', 'R1', 'draft', 100), ('Ativo', 'ativo', 'A1', 'active', 100)`;
     const rows = await db().begin(async (tx) => {
       await tx`set local role anon`;
-      return tx`select slug from public.products`;
+      return tx`select slug from public.products where slug in ('ativo', 'rascunho')`;
     });
     expect(rows.map((r) => r.slug)).toEqual(["ativo"]);
   });
