@@ -95,7 +95,7 @@ export async function createOrderFromCart(
             (select count(*)::int from public.orders where lower(customer_email) = ${input.email} and paid_at is not null) as paid,
             (select count(*)::int from public.coupon_redemptions r join public.orders o on o.id = r.order_id
               where r.coupon_id = ${c.id} and lower(r.customer_email) = ${input.email} and o.status not in ('canceled')) as uses`;
-        const check = validateCoupon(c, { subtotal, customerPaidOrders: paid, customerCouponUses: uses });
+        const check = validateCoupon(c, { subtotal, customerPaidOrders: paid, customerCouponUses: uses, email: input.email });
         if (!check.ok) throw new CheckoutError(`Cupom ${c.code}: ${check.reason}`);
         coupon = c;
       } else {

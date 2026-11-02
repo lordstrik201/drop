@@ -99,6 +99,23 @@ export const SETTING_FORMS: SettingForm[] = [
     ],
   },
   {
+    key: "marketing", title: "Recuperação de carrinho", description: "E-mail de lembrete para carrinhos esquecidos. Só é enviado a clientes com conta que autorizaram comunicações (LGPD), uma vez por carrinho, com link de descadastro.",
+    fields: [
+      { key: "abandoned_cart_enabled", label: "Enviar lembrete de carrinho abandonado", type: "bool" },
+      { key: "abandoned_cart_delay_hours", label: "Enviar após (horas sem atividade)", type: "int", min: 1, max: 72 },
+    ],
+  },
+  {
+    key: "loyalty", title: "Programa de fidelidade", description: "Pontos creditados quando o pedido é entregue; o cliente troca por um cupom pessoal na conta.",
+    fields: [
+      { key: "enabled", label: "Programa ativo", type: "bool" },
+      { key: "points_per_real", label: "Pontos por R$ 1,00 pago", type: "int", min: 0, max: 100 },
+      { key: "cents_per_point", label: "Valor de cada ponto (centavos)", type: "int", min: 1, max: 100 },
+      { key: "min_redeem_points", label: "Mínimo de pontos para trocar", type: "int", min: 1, max: 1000000 },
+      { key: "coupon_valid_days", label: "Validade do cupom gerado (dias)", type: "int", min: 1, max: 365 },
+    ],
+  },
+  {
     key: "notifications", title: "E-mails ao cliente", description: "E-mails transacionais (sobre o próprio pedido) não exigem consentimento de marketing.",
     fields: [
       { key: "order_created", label: "Pedido recebido", type: "bool" },

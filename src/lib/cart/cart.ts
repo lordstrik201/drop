@@ -30,7 +30,7 @@ export async function getCartId(): Promise<string | null> {
   return v && UUID.test(v) ? v : null;
 }
 
-async function setCartCookie(id: string) {
+export async function setCartCookie(id: string) {
   (await cookies()).set(CART_COOKIE, id, {
     httpOnly: true,
     sameSite: "lax",

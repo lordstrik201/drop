@@ -79,6 +79,10 @@ describe("páginas do painel renderizam", () => {
     ["financeiro-contas", () => import("@/app/admin/financeiro/page"), () => ({ searchParams: sp({ aba: "contas", situacao: "todas" }) })],
     ["financeiro-lucro", () => import("@/app/admin/financeiro/page"), () => ({ searchParams: sp({ aba: "lucro" }) })],
     ["relatorios", () => import("@/app/admin/relatorios/page"), () => ({ searchParams: sp() })],
+    ["marketing", () => import("@/app/admin/marketing/page"), () => ({ searchParams: sp() })],
+    ["marketing-campanhas", () => import("@/app/admin/marketing/page"), () => ({ searchParams: sp({ aba: "campanhas" }) })],
+    ["marketing-carrinho", () => import("@/app/admin/marketing/page"), () => ({ searchParams: sp({ aba: "carrinho" }) })],
+    ["marketing-fidelidade", () => import("@/app/admin/marketing/page"), () => ({ searchParams: sp({ aba: "fidelidade" }) })],
     ["envios", () => import("@/app/admin/envios/page"), () => ({ searchParams: sp() })],
     ["envios-todos", () => import("@/app/admin/envios/page"), () => ({ searchParams: sp({ aba: "todos", status: "posted", q: "BR" }) })],
   ];

@@ -11,12 +11,18 @@ import { formatBRL } from "@/lib/money";
 
 export const metadata: Metadata = { title: "Carrinho", robots: { index: false } };
 
-export default async function CartPage({ searchParams }: { searchParams: Promise<{ erro?: string }> }) {
-  const { erro } = await searchParams;
+const AVISO: Record<string, string> = {
+  "link-invalido": "O link do e-mail não é válido. Seus itens podem não estar mais no carrinho.",
+  "carrinho-finalizado": "Esse carrinho já foi finalizado ou expirou.",
+};
+
+export default async function CartPage({ searchParams }: { searchParams: Promise<{ erro?: string; aviso?: string }> }) {
+  const { erro, aviso } = await searchParams;
   const cart = await getCart();
   if (!cart.lines.length) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10">
+        {aviso && AVISO[aviso] && <div className="mb-4"><Alert tone="warning">{AVISO[aviso]}</Alert></div>}
         <EmptyState title="Seu carrinho está vazio" description="Explore a loja e adicione produtos." action={<LinkButton href="/busca">Ver produtos</LinkButton>} />
       </div>
     );

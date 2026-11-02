@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { redeemPoints } from "@/lib/marketing/loyalty";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth/session";
 import { db } from "@/lib/db/client";
@@ -85,4 +87,18 @@ export async function privacyRequestAction(_: FormState, form: FormData): Promis
   await db()`insert into public.privacy_requests (profile_id, email, kind, notes) values (${user.id}, ${user.email}, ${kind}, ${String(form.get("notes") ?? "").slice(0, 1000) || null})`;
   if (kind === "revoke_consent") await db()`update public.profiles set marketing_consent = false, marketing_consent_at = now() where id = ${user.id}`;
   return { ok: true, message: "Solicitação registrada. Responderemos em até 15 dias, conforme a LGPD." };
+}
+
+/** Troca de pontos de fidelidade por cupom pessoal. */
+export async function redeemPointsAction(f: FormData) {
+  const user = await requireUser("/conta");
+  let msg: string;
+  try {
+    const r = await redeemPoints(user.id, Number(String(f.get("points") ?? "").replace(/\D/g, "")));
+    msg = `ok:${r.code}`;
+  } catch (e) {
+    msg = `erro:${(e as Error).message}`;
+  }
+  revalidatePath("/conta");
+  redirect(`/conta?pontos=${encodeURIComponent(msg)}#fidelidade`);
 }

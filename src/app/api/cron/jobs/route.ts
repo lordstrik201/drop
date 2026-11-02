@@ -19,6 +19,10 @@ async function run(request: Request) {
   await enqueueJob(db(), "suppliers.sync_all", {}, `suppliers.sync_all:${new Date().toISOString().slice(0, 10)}`, { maxAttempts: 2 });
   // Rastreio automático: a cada hora (só consulta envios vencidos pelo intervalo configurado).
   await enqueueJob(db(), "shipments.track", {}, `shipments.track:${Math.floor(Date.now() / 3_600_000)}`, { maxAttempts: 2 });
+  // Marketing: lembrete de carrinho (a cada hora) e crédito de pontos de fidelidade (a cada hora).
+  const hour = Math.floor(Date.now() / 3_600_000);
+  await enqueueJob(db(), "carts.abandoned", {}, `carts.abandoned:${hour}`, { maxAttempts: 1 });
+  await enqueueJob(db(), "loyalty.award", {}, `loyalty.award:${hour}`, { maxAttempts: 2 });
   // Resumo diário de alertas de logística no log do sistema.
   await enqueueJob(db(), "logistics.alerts", {}, `logistics.alerts:${new Date().toISOString().slice(0, 10)}`, { maxAttempts: 1 });
   // Tarefas rápidas primeiro; a sincronização de fornecedor (lenta, limitada pela API) roda uma por execução.

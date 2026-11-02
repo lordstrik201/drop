@@ -15,6 +15,8 @@ export type Coupon = {
   starts_at: Date | string | null;
   ends_at: Date | string | null;
   is_active: boolean;
+  /** Cupom pessoal: só vale para este e-mail (ex.: resgate de pontos). */
+  customer_email?: string | null;
 };
 
 export type CouponContext = {
@@ -23,6 +25,8 @@ export type CouponContext = {
   customerPaidOrders: number;
   /** Quantas vezes este cliente já usou este cupom. */
   customerCouponUses: number;
+  /** E-mail de quem está comprando (para cupons pessoais). */
+  email?: string | null;
   now?: Date;
 };
 
@@ -31,6 +35,8 @@ export type CouponCheck = { ok: true } | { ok: false; reason: string };
 export function validateCoupon(c: Coupon, ctx: CouponContext): CouponCheck {
   const now = ctx.now ?? new Date();
   if (!c.is_active) return { ok: false, reason: "Cupom inativo." };
+  if (c.customer_email && (!ctx.email || c.customer_email.toLowerCase() !== ctx.email.trim().toLowerCase()))
+    return { ok: false, reason: "Este cupom é pessoal e vale só para a conta que o gerou." };
   if (c.starts_at && new Date(c.starts_at) > now) return { ok: false, reason: "Cupom ainda não está válido." };
   if (c.ends_at && new Date(c.ends_at) <= now) return { ok: false, reason: "Cupom expirado." };
   if (c.max_uses != null && c.used_count >= c.max_uses) return { ok: false, reason: "Cupom esgotado." };

@@ -9,6 +9,8 @@ import { db } from "@/lib/db/client";
 import { refreshCjTracking } from "@/lib/shipping/tracking";
 import { reportLogisticsAlerts } from "@/lib/shipping/alerts";
 import { readSetting } from "@/lib/settings";
+import { sendAbandonedCartEmails } from "@/lib/marketing/abandoned";
+import { awardLoyaltyPoints } from "@/lib/marketing/loyalty";
 import { enqueueJob } from "./queue";
 
 /** Registro central dos executores de tarefas em segundo plano. */
@@ -32,4 +34,7 @@ export const jobHandlers: Record<string, JobHandler> = {
     return refreshCjTracking({ limit: ids ? ids.length : 100, refreshHours: cfg.tracking_refresh_hours ?? 12, shipmentIds: ids });
   },
   "logistics.alerts": async () => reportLogisticsAlerts(),
+  // Lembrete de carrinho: só para clientes com consentimento de marketing (ver lib/marketing/abandoned).
+  "carts.abandoned": async () => sendAbandonedCartEmails(),
+  "loyalty.award": async () => awardLoyaltyPoints(),
 };

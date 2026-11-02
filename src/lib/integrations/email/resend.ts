@@ -1,10 +1,10 @@
 /**
  * Envio de e-mail pela API do Resend (https://resend.com/docs/api-reference/emails/send-email):
  * POST https://api.resend.com/emails com Authorization: Bearer <api key>,
- * corpo { from, to, subject, html, text } e cabeçalho Idempotency-Key opcional.
+ * corpo { from, to, subject, html, text, headers? } e cabeçalho Idempotency-Key opcional.
  * Serviço com plano gratuito limitado e planos pagos — ver docs/CUSTOS.md.
  */
-export type EmailMessage = { from: string; to: string; subject: string; html: string; text: string; idempotencyKey?: string };
+export type EmailMessage = { from: string; to: string; subject: string; html: string; text: string; idempotencyKey?: string; headers?: Record<string, string> };
 
 export async function sendWithResend(apiKey: string, msg: EmailMessage, f: typeof fetch = fetch): Promise<{ id: string }> {
   const res = await f("https://api.resend.com/emails", {
@@ -14,7 +14,7 @@ export async function sendWithResend(apiKey: string, msg: EmailMessage, f: typeo
       "Content-Type": "application/json",
       ...(msg.idempotencyKey ? { "Idempotency-Key": msg.idempotencyKey.slice(0, 256) } : {}),
     },
-    body: JSON.stringify({ from: msg.from, to: [msg.to], subject: msg.subject, html: msg.html, text: msg.text }),
+    body: JSON.stringify({ from: msg.from, to: [msg.to], subject: msg.subject, html: msg.html, text: msg.text, ...(msg.headers ? { headers: msg.headers } : {}) }),
   });
   const body = (await res.json().catch(() => ({}))) as { id?: string; message?: string };
   if (!res.ok || !body.id) {
